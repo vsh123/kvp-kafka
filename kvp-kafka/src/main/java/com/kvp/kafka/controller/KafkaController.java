@@ -1,6 +1,6 @@
 package com.kvp.kafka.controller;
 
-import com.kvp.kafka.domain.Introduce;
+import com.kvp.domain.Introduce;
 import com.kvp.kafka.producer.KvpTestProducer;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
