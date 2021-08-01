@@ -1,5 +1,6 @@
 package com.kvp.kafka.producer;
 
+import com.kvp.kafka.domain.Introduce;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.kafka.core.KafkaTemplate;
 import org.springframework.stereotype.Component;
@@ -8,14 +9,14 @@ import org.springframework.stereotype.Component;
 @Component
 public class KvpTestProducer {
     private static final String TOPIC = "kvp-test";
-    private final KafkaTemplate<String, String> kafkaTemplate;
+    private final KafkaTemplate<String, Introduce> kafkaTemplate;
 
-    public KvpTestProducer(KafkaTemplate<String, String> kafkaTemplate) {
+    public KvpTestProducer(KafkaTemplate<String, Introduce> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
-    public void send(String message) {
-        log.info("produce message : {}", message);
-        kafkaTemplate.send(TOPIC, message);
+    public void send(Introduce introduce) {
+        log.info("produce message : {}", introduce);
+        kafkaTemplate.send(TOPIC, introduce);
     }
 }
