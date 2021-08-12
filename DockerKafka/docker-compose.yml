@@ -16,7 +16,7 @@ services:
     environment:
       KAFKA_ADVERTISED_HOST_NAME: localhost
       # topic : 파티션 개수 : replication
-      KAFKA_CREATE_TOPICS: "kvp-input:1:1,kvp-output:1:1"
+      KAFKA_CREATE_TOPICS: "kvp-input:1:1,junior-engineer:1:1,senior-engineer:1:1,senior-java-engineer:1:1"
       KAFKA_ZOOKEEPER_CONNECT: zookeeper:2181
     volumes:
       - /var/run/docker.sock:/var/run/docker.sock

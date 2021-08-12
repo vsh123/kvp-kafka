@@ -1,5 +1,6 @@
 package com.kvp.kafka.controller;
 
+import com.kvp.domain.ComputerLanguage;
 import com.kvp.domain.Introduce;
 import com.kvp.kafka.producer.KvpTestProducer;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,8 @@ public class KafkaController {
     }
 
     @GetMapping
-    public ResponseEntity send(String name, Long age) {
-        Introduce introduce = new Introduce(name, age);
+    public ResponseEntity send(String name, Long age, ComputerLanguage language, int annual) {
+        Introduce introduce = new Introduce(name, age, language, annual);
         kvpTestProducer.send(introduce);
         return ResponseEntity.ok().build();
     }

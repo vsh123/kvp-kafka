@@ -1,6 +1,8 @@
 package com.kvp.streams;
 
+import com.kvp.domain.AnonymousIntroduce;
 import com.kvp.domain.Introduce;
+import com.kvp.streams.serdes.AnonymousIntroduceSerde;
 import com.kvp.streams.serdes.IntroduceSerde;
 import org.apache.kafka.common.serialization.Serdes;
 import org.apache.kafka.streams.KafkaStreams;
@@ -9,6 +11,8 @@ import org.apache.kafka.streams.StreamsConfig;
 import org.apache.kafka.streams.Topology;
 import org.apache.kafka.streams.kstream.Consumed;
 import org.apache.kafka.streams.kstream.KStream;
+import org.apache.kafka.streams.kstream.Predicate;
+import org.apache.kafka.streams.kstream.Printed;
 import org.apache.kafka.streams.kstream.Produced;
 
 import java.util.Properties;
@@ -20,23 +24,32 @@ public class StreamsApplication {
         properties.put(StreamsConfig.APPLICATION_ID_CONFIG, "kvp-streams");
         properties.put(StreamsConfig.BOOTSTRAP_SERVERS_CONFIG, "localhost:9092");
         properties.put(StreamsConfig.DEFAULT_KEY_SERDE_CLASS_CONFIG, Serdes.String().getClass());
-        properties.put(StreamsConfig.DEFAULT_VALUE_SERDE_CLASS_CONFIG, IntroduceSerde.class);
 
         StreamsBuilder builder = new StreamsBuilder();
 
         KStream<String, Introduce> firstStream = builder.stream("kvp-input", Consumed.with(Serdes.String(), new IntroduceSerde()));
+        firstStream.print(Printed.<String,Introduce>toSysOut().withLabel("firstStream"));
 
-        firstStream.foreach((key, value) -> System.out.println(String.format("value is %s", value.toString())));
+        Predicate<String, Introduce> isJunior = (key, introduce) -> introduce.isJunior();
+        Predicate<String, Introduce> isSenior = (key, introduce) -> introduce.isSenior();
+        int junior = 0;
+        int senior = 1;
+        KStream<String, Introduce>[] engineerStreams =
+            firstStream.branch(isJunior, isSenior);
 
-        KStream<String, Introduce> addAgeStream = firstStream.mapValues(value -> {
-            Introduce introduce = new Introduce();
-            introduce.setAge(value.getAge());
-            introduce.setName(value.getName());
-            introduce.addAge();
-            return introduce;
-        });
+        KStream<String, Introduce> juniorEngineerStream = engineerStreams[junior];
+        juniorEngineerStream.print(Printed.<String, Introduce>toSysOut().withLabel("juniorEngineer"));
+        juniorEngineerStream.to("junior-engineer", Produced.with(Serdes.String(), new IntroduceSerde()));
 
-        addAgeStream.to("kvp-output");
+        KStream<String, Introduce> seniorEngineerStream = engineerStreams[senior];
+        seniorEngineerStream.print(Printed.<String, Introduce>toSysOut().withLabel("seniorEngineer"));
+        seniorEngineerStream.to("senior-engineer", Produced.with(Serdes.String(), new IntroduceSerde()));
+
+        KStream<String, Introduce> seniorJavaEngineer = seniorEngineerStream.filter(((key, value) -> value.isJavaEngineer()));
+        seniorJavaEngineer.print(Printed.<String, Introduce>toSysOut().withLabel("seniorJavaEngineer"));
+        seniorJavaEngineer
+            .mapValues(introduce -> new AnonymousIntroduce(introduce.getAge(), introduce.getAnnual()))
+            .to("senior-java-engineer", Produced.with(Serdes.String(), new AnonymousIntroduceSerde()));
 
         Topology topology = builder.build();
 
