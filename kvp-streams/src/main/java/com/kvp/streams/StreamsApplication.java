@@ -28,12 +28,15 @@ public class StreamsApplication {
 
         firstStream.foreach((key, value) -> System.out.println(String.format("value is %s", value.toString())));
 
-        firstStream.mapValues(value -> {
-            value.addAge();
-            return value;
+        KStream<String, Introduce> addAgeStream = firstStream.mapValues(value -> {
+            Introduce introduce = new Introduce();
+            introduce.setAge(value.getAge());
+            introduce.setName(value.getName());
+            introduce.addAge();
+            return introduce;
         });
 
-        firstStream.to("kvp-output");
+        addAgeStream.to("kvp-output");
 
         Topology topology = builder.build();
 
