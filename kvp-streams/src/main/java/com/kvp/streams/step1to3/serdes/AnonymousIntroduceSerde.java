@@ -1,7 +1,6 @@
-package com.kvp.streams.serdes;
+package com.kvp.streams.step1to3.serdes;
 
 import com.kvp.domain.AnonymousIntroduce;
-import com.kvp.domain.Introduce;
 import org.apache.kafka.common.serialization.Serdes;
 import org.springframework.kafka.support.serializer.JsonDeserializer;
 import org.springframework.kafka.support.serializer.JsonSerializer;

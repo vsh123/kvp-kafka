@@ -1,4 +1,4 @@
-package com.kvp.kafka.producer;
+package com.kvp.kafka.config;
 
 import com.kvp.domain.Introduce;
 import org.apache.kafka.clients.producer.ProducerConfig;
@@ -16,8 +16,11 @@ import java.util.Map;
 //https://docs.spring.io/spring-kafka/docs/current/reference/html/#kafka-template
 @Configuration
 public class KafkaProducerConfiguration {
+
+    public static final String KAFKA_JSON_PRODUCER_TEMPLATE_NAME = "kafkaIntroduceProducer";
+
     @Bean
-    public ProducerFactory<String, Introduce> producerFactory() {
+    public ProducerFactory<String, Object> producerFactory() {
         return new DefaultKafkaProducerFactory<>(producerConfigs());
     }
 
@@ -30,8 +33,8 @@ public class KafkaProducerConfiguration {
         return props;
     }
 
-    @Bean
-    public KafkaTemplate<String, Introduce> kafkaTemplate() {
+    @Bean(KAFKA_JSON_PRODUCER_TEMPLATE_NAME)
+    public KafkaTemplate<String, Object> kafkaTemplate() {
         return new KafkaTemplate<>(producerFactory());
     }
 }
