@@ -1,0 +1,2 @@
+GET http://localhost:8080/step3?name=김혜린&purchasePrice=100000
+Accept: application/json

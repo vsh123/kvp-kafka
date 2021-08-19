@@ -9,9 +9,9 @@ import org.springframework.stereotype.Component;
 @Component
 public class KvpTestProducer {
     private static final String TOPIC = "kvp-input";
-    private final KafkaTemplate<String, Introduce> kafkaTemplate;
+    private final KafkaTemplate<String, Object> kafkaTemplate;
 
-    public KvpTestProducer(KafkaTemplate<String, Introduce> kafkaTemplate) {
+    public KvpTestProducer(KafkaTemplate<String, Object> kafkaTemplate) {
         this.kafkaTemplate = kafkaTemplate;
     }
 
